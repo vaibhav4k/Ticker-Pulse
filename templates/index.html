@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>TickerPulse</title>
+  <style>
+    /* CSS styles */
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #FFF0E0;
+}
+
+.container {
+  width: 80%;
+  margin: 0 auto;
+  text-align: center;
+  padding-top: 50px;
+}
+
+h1 {
+  color: #333;
+}
+
+form {
+  margin-bottom: 20px;
+}
+
+input[type="text"] {
+  padding: 8px;
+  font-size: 16px;
+}
+
+button {
+  padding: 8px 16px;
+  font-size: 16px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+.output-container {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  display: none;
+}
+
+.output-container.show {
+  display: block;
+}
+
+</style>
+</head>
+<body>
+  <div class="container">
+    <h1>TickerPulse</h1>
+    <form id="symbolForm">
+      <input type="text" id="symbolInput" placeholder="Enter Symbol (e.g. MRF)">
+      <button type="submit">Get Price</button>
+    </form>
+    <div id="output" class="output-container">
+      <!-- Output will be displayed here -->
+    </div>
+  </div>
+
+  <script>
+    // JavaScript code
+    document.getElementById('symbolForm').addEventListener('submit', function(event) {
+      event.preventDefault();
+      const symbol = document.getElementById('symbolInput').value.toUpperCase();
+
+      fetch(`/get_price/${symbol}`)
+        .then(response => response.json())
+        .then(data => {
+          displayMarketData(data);
+        })
+        .catch(error => {
+          displayError(error);
+        });
+    });  
+
+    function displayMarketData(data) {
+      const outputDiv = document.getElementById('output');
+      outputDiv.innerHTML = `
+        <p><strong>Symbol:</strong> ${data.symbol}</p>
+        <p><strong>Name:</strong> ${data.name}</p>
+        <p><strong>Exchange:</strong> ${data.exchange}</p>
+        <p><strong>Market Price:</strong> ${data.market_price}</p>
+        <p><strong>Price Fetch Time:</strong> ${data.price_fetch_time}</p>
+      `;
+      outputDiv.classList.add('show');
+    }
+
+    function displayError(error) {
+      const outputDiv = document.getElementById('output');
+      outputDiv.innerHTML = `<p>Error fetching data: ${error}</p>`;
+      outputDiv.classList.add('show');
+    }
+  </script>
+</body>
+</html>
